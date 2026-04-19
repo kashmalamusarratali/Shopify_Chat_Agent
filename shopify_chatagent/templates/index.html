@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h3>AI Chat</h3>
+<input id="msg" type="text"/>
+<button onclick="send()">Send</button>
+<div id="chat"></div>
+
+<script>
+function getSessionId(){
+    let id = localStorage.getItem("session_id");
+    if(!id){
+        id = crypto.randomUUID();
+        localStorage.setItem("session_id", id);
+    }
+    return id;
+}
+
+async function send(){
+    const message = document.getElementById("msg").value;
+    const response = await fetch("/chat", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+            message: message,
+            session_id: getSessionId()
+        })
+    });
+
+    const data = await response.json();
+    document.getElementById("chat").innerHTML += 
+        "<p><b>You:</b>"+message+"</p>" +
+        "<p><b>Bot:</b>"+data.reply+"</p>";
+}
+</script>
+</body>
+</html>
